@@ -1,0 +1,584 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Exchange Rate and Conversion Application",
+    "version": "v1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Test Environment"
+    }
+  ],
+  "paths": {
+    "/api/transaction/filter": {
+      "post": {
+        "tags": [
+          "Transaction"
+        ],
+        "operationId": "filterAll",
+        "parameters": [
+          {
+            "name": "max",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransactionFilterDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageTransaction"
+                }
+              }
+            }
+          }
+
+        }
+      }
+    },
+    "/api/transaction/{id}": {
+      "get": {
+        "tags": [
+          "Transaction"
+        ],
+        "operationId": "findById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/exchange/rate": {
+      "post": {
+        "tags": [
+          "Exchange"
+        ],
+        "operationId": "rate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RateCheckRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateCheckResponseDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDTO"
+                },
+                "examples": {
+                  "MissingField": {
+                    "value": {
+                      "code": 400,
+                      "type": "ValidationError",
+                      "info": "Source currency is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDTO"
+                },
+                "examples": {
+                  "NotFound": {
+                    "value": {
+                      "code": 404,
+                      "type": "NotFound",
+                      "info": "Exchange service returned 404"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDTO"
+                },
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "code": 401,
+                      "info": "Invalid or expired Access Key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDTO"
+                },
+                "examples": {
+                  "Forbidden": {
+                    "value": {
+                      "code": 403,
+                      "info": "The action you are performing is forbidden or you have reached the limit for this month"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDTO"
+                },
+                "examples": {
+                  "InternalError": {
+                    "value": {
+                      "code": 500,
+                      "info": "An error has occurred while processing your request"
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+        }
+      }
+    },
+    "/api/exchange/": {
+      "post": {
+        "tags": [
+          "Exchange"
+        ],
+        "operationId": "exchangeTransaction",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RateCheckRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Transaction"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDTO"
+                },
+                "examples": {
+                  "MissingField": {
+                    "value": {
+                      "code": 400,
+                      "type": "ValidationError",
+                      "info": "Source currency is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDTO"
+                },
+                "examples": {
+                  "NotFound": {
+                    "value": {
+                      "code": 404,
+                      "type": "NotFound",
+                      "info": "Exchange service returned 404"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDTO"
+                },
+                "examples": {
+                  "Unauthorized": {
+                    "value": {
+                      "code": 401,
+                      "info": "Invalid or expired Access Key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDTO"
+                },
+                "examples": {
+                  "Forbidden": {
+                    "value": {
+                      "code": 403,
+                      "info": "The action you are performing is forbidden or you have reached the limit for this month"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDTO"
+                },
+                "examples": {
+                  "InternalError": {
+                    "value": {
+                      "code": 500,
+                      "info": "An error has occurred while processing your request"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "TransactionFilterDTO": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The start date for filtering transactions.",
+            "example": "2025-01-01"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The end date for filtering transactions.",
+            "example": "2025-01-31"
+          },
+          "sourceCurrency": {
+            "type": "string",
+            "description": "The source currency code (ISO 4217 format) for filtering transactions.",
+            "example": "USD"
+          },
+          "targetCurrency": {
+            "type": "string",
+            "description": "The target currency code (ISO 4217 format) for filtering transactions.",
+            "example": "EUR"
+          }
+        }
+      },
+      "PageTransaction": {
+        "type": "object",
+        "properties": {
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Transaction"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SortObject"
+            }
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PageableObject": {
+        "type": "object",
+        "properties": {
+          "paged": {
+            "type": "boolean"
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unpaged": {
+            "type": "boolean"
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sort": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SortObject"
+            }
+          }
+        }
+      },
+      "SortObject": {
+        "type": "object",
+        "properties": {
+          "direction": {
+            "type": "string"
+          },
+          "nullHandling": {
+            "type": "string"
+          },
+          "ascending": {
+            "type": "boolean"
+          },
+          "property": {
+            "type": "string"
+          },
+          "ignoreCase": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Transaction": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "The ID of the transaction.",
+            "example": 1
+          },
+          "amount": {
+            "type": "number",
+            "format": "double",
+            "description": "The transaction amount.",
+            "example": "100"
+          },
+          "sourceCurrency": {
+            "type": "string",
+            "description": "The source currency.",
+            "default": "EUR"
+          },
+          "targetCurrency": {
+            "type": "string",
+            "description": "The target currency.",
+            "example": "ALL"
+          },
+          "exchangeRate": {
+            "type": "number",
+            "format": "double",
+            "description": "The exchange rate used for the transaction.",
+            "example": 0.98
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "The date of the transaction.",
+            "example": "2025-01-18T20:30"
+          }
+        }
+      },
+      "RateCheckRequestDTO": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "format": "double",
+            "description": "The amount to be converted from the source currency.",
+            "example": 1.0
+          },
+          "sourceCurrency": {
+            "type": "string",
+            "description": "The source currency code (ISO 4217 format).",
+            "example": "EUR"
+          },
+          "targetCurrency": {
+            "type": "string",
+            "description": "The target currency code (ISO 4217 format).",
+            "example": "ALL"
+          }
+        },
+        "required": ["amount", "sourceCurrency", "targetCurrency"]
+      },
+      "RateCheckResponseDTO": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "format": "double",
+            "description": "The amount to be converted.",
+            "example": 1.0
+          },
+          "rate": {
+            "type": "number",
+            "format": "double",
+            "description": "The conversion rate from sourceCurrency to targetCurrency.",
+            "example": 0.98
+          },
+          "rateDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date and time when the conversion rate was recorded.",
+            "example": "2025-01-18T12:34:56"
+          },
+          "requestDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date and time when the rate check request was made.",
+            "example": "2025-01-18T12:00:00"
+          },
+          "sourceCurrency": {
+            "type": "string",
+            "description": "The source currency code (ISO 4217 format).",
+            "example": "USD"
+          },
+          "targetCurrency": {
+            "type": "string",
+            "description": "The target currency code (ISO 4217 format).",
+            "example": "EUR"
+          }
+        }
+      },
+      "ErrorDTO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "number",
+            "example": "400"
+          },
+          "info": {
+            "type": "string",
+            "example": "There was a problem with the request"
+          }
+        }
+      }
+    }
+  }
+}
