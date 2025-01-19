@@ -59,6 +59,7 @@ The application provides the following endpoints:
     - **Description:** Returns all/filtered transactions.
 
 ## Notes
+- Endpoints can be tested through swagger-ui and examples are provided.
 - The application requires **no authorization**.
 - Ensure that port `8080` is available on your local machine or containerized environment.
 
